@@ -1,5 +1,6 @@
 from Grid_Generator import gen_grid
 import timeit
+import pandas as pd
 
 def dist(i, j, dim, heu):  #function to measure heuristic values
     if heu == 1:
@@ -86,6 +87,8 @@ def a_star(dim, P, grid, heu, si, sj):
     return(result, p)
 
 def repeated_a_star(grid, dim, P, heu):
+
+    df = pd.DataFrame(columns=['Discovered','xi','xj','yi','yj'])
     
     start = timeit.default_timer() #recording time stamp to measure run time
     
@@ -99,16 +102,26 @@ def repeated_a_star(grid, dim, P, heu):
     
     final = [] #Data structure to store final trajectory
     
-    cells = 0 
+    cells = 0
+
+    count = 0
     
     while done != True:
         
         result, parent =a_star(dim, P, dis, heu, si, sj) #planning stage of repeated A*
         if result == False:  #true if grid not solvable
+            df1 = pd.DataFrame([[dis, si, sj, -1, -1]],columns=['Discovered','xi','xj','yi','yj'])
+            df = pd.concat([df, df1])
             break
         
         path = find_path(parent, dim, si, sj)
         cells = cells + search_size(parent, dim) #used to record total number of cells processed
+        
+        if count%5 == 0:
+            df1 = pd.DataFrame([[dis, si, sj, path[0][0], path[0][1]]],columns=['Discovered','xi','xj','yi','yj'])
+            df = pd.concat([df, df1])
+        
+        count = count + 1
         
         flag = True
         for (i, j) in path:  #agent traversing the planned path
@@ -141,4 +154,4 @@ def repeated_a_star(grid, dim, P, heu):
     
     stop = timeit.default_timer() #recording time stamp to measure run time
     
-    return(result, final, dis, cells, start, stop)
+    return(result, final, dis, cells, start, stop, df)

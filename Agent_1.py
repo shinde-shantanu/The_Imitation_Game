@@ -118,7 +118,7 @@ def repeated_a_star(grid, dim, P, heu):
         cells = cells + search_size(parent, dim) #used to record total number of cells processed
         
         if count%5 == 0:
-            df1 = pd.DataFrame([[dis, si, sj, path[0][0], path[0][1]]],columns=['Discovered','xi','xj','yi','yj'])
+            df1 = pd.DataFrame([[dis, si, sj, path[1][0], path[1][1]]],columns=['Discovered','xi','xj','yi','yj'])
             df = pd.concat([df, df1])
         
         count = count + 1

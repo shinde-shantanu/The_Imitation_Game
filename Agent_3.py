@@ -1,5 +1,6 @@
 from A_Star import a_star
 import timeit
+import pandas as pd
 
 def sense(i, j, grid, dim):
     ans=0
@@ -83,6 +84,8 @@ def con_vis(con, vis, dim):
     return c-vis
 
 def agent_3(grid, dim, P, heu):
+
+    df = pd.DataFrame(columns=['Discovered','xi','xj','yi','yj'])
     
     start = timeit.default_timer() #recording time stamp to measure run time
 
@@ -121,6 +124,8 @@ def agent_3(grid, dim, P, heu):
     bumps = 0
 
     c_in = inference(dis, N, C, B, E, H, visited, con, dim)
+
+    count = 0
     
     while done != True:
 
@@ -129,9 +134,16 @@ def agent_3(grid, dim, P, heu):
         plan_t = plan_t + (timeit.default_timer() - ps)
         
         if result == False: #true if grid not solvable
+            df1 = pd.DataFrame([[dis, si, sj, -1, -1]],columns=['Discovered','xi','xj','yi','yj'])
+            df = pd.concat([df, df1])
             break
         
         path = find_path(parent, dim, si, sj)
+
+        if count%5 == 0:
+            df1 = pd.DataFrame([[dis, si, sj, path[1][0], path[1][1]]],columns=['Discovered','xi','xj','yi','yj'])
+            df = pd.concat([df, df1])
+        count = count + 1
 
         flag = True
         for (i, j) in path: #agent traversing the planned path
@@ -180,4 +192,4 @@ def agent_3(grid, dim, P, heu):
     
     stop = timeit.default_timer()
 
-    return(result, final, dis, vis, start, stop, plan_t, bumps, con_vis(con, vis, dim)) #recording time stamp to measure run time
+    return(result, final, dis, vis, start, stop, plan_t, bumps, con_vis(con, vis, dim), df) #recording time stamp to measure run time
